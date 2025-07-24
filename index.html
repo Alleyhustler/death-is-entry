@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEATH IS ENTRY</title>
+<link href="https://fonts.googleapis.com/css2?family=Rubik+Doodle+Shadow&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@solana/web3.js@1.70.1/lib/index.iife.min.js"></script>
+    <style>
+        :root {
+--primary: #1a1a1a;
+    --secondary: #0a0a0a;
+    --accent: #4a4949;
+    --text: #e0e0e0;
+    --text-dim: #888;
+    --glow: rgb(84 79 79 / 70%);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: url('image.png') center center fixed;;
+            background-size: cover;
+            background-repeat: no-repeat;
+            color: var(--text);
+            font-family: "Rubik Doodle Shadow", system-ui;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            /* Fallback gradient in case image doesn't load */
+            background-color: var(--primary);
+        }
+        
+        /* Optional overlay to darken/tint the background image */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(32, 32, 32, 0.589); /* Semi-transparent overlay */
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            width: 100%;
+            flex: 1;
+        }
+        
+        header {
+            display: flex;
+            justify-content: flex-end;
+            padding: 1rem 2rem;
+        }
+        
+        .wallet-connect {
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .wallet-connect:hover {
+            filter: drop-shadow(0 0 8px var(--glow));
+        }
+        
+        .wallet-address {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            margin-top: 0.5rem;
+            text-align: right;
+  font-family: "Rubik Doodle Shadow", system-ui;
+        }
+        
+        .landing-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-height: 70vh;
+            position: relative;
+        }
+        
+        .title {
+  font-family: "Rubik Doodle Shadow", system-ui;
+            font-size: 5rem;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 15px var(--glow);
+            letter-spacing: 2px;
+        }
+        
+        .subtitle {
+  font-family: "Rubik Doodle Shadow", system-ui;
+            font-size: 1.5rem;
+            margin-bottom: 3rem;
+            font-weight: 500;
+            color: var(--text-dim);
+        }
+        
+        .character-image {
+            max-width: 300px;
+            margin-bottom: 3rem;
+            filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.7));
+        }
+        
+        .enter-button {
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--text);
+            padding: 1rem 3rem;
+            font-size: 1.2rem;
+  font-family: "Rubik Doodle Shadow", system-ui;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .enter-button:hover {
+            background: var(--accent);
+            box-shadow: 0 0 15px var(--glow);
+        }
+        
+        .burn-interface {
+            display: none;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .burn-card {
+            background: var(--secondary);
+            border: 1px solid rgba(139, 0, 0, 0.3);
+            padding: 2rem;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .burn-card h2 {
+  font-family: "Rubik Doodle Shadow", system-ui;
+            margin-bottom: 1.5rem;
+            color: var(--accent);
+            font-size: 1.8rem;
+        }
+        
+        .wallet-info {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(139, 0, 0, 0.2);
+        }
+        
+        .wallet-info p {
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .wallet-info span {
+            font-family: monospace;
+            color: var(--text);
+        }
+        
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 0.8rem;
+            background: rgba(10, 10, 10, 0.5);
+            border: 1px solid rgba(139, 0, 0, 0.3);
+            color: var(--text);
+  font-family: "Rubik Doodle Shadow", system-ui;
+            font-size: 1rem;
+        }
+        
+        .die-button {
+            background: var(--accent);
+            color: var(--text);
+            border: none;
+            padding: 1rem 2rem;
+            width: 100%;
+  font-family: "Rubik Doodle Shadow", system-ui;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .die-button:hover {
+            background: #6b0000;
+            box-shadow: 0 0 15px var(--glow);
+        }
+        
+        .tooltip {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            margin-top: 0.5rem;
+            text-align: center;
+        }
+        
+        .airdrop-info {
+            padding: 1.5rem;
+            background: rgba(10, 10, 10, 0.7);
+            border-radius: 5px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .airdrop-info h3 {
+  font-family: "Rubik Doodle Shadow", system-ui;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            font-size: 1.2rem;
+        }
+        
+        .countdown {
+            font-size: 1.5rem;
+  font-family: "Rubik Doodle Shadow", system-ui;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        
+        .top-burners {
+            margin-top: 1.5rem;
+        }
+        
+        .top-burners h4 {
+  font-family: "Rubik Doodle Shadow", system-ui;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            color: var(--text-dim);
+        }
+        
+        .burner-list {
+            list-style: none;
+        }
+        
+        .burner-list li {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(139, 0, 0, 0.1);
+            font-size: 0.9rem;
+        }
+        
+        .burner-list span:first-child {
+  font-family: "Rubik Doodle Shadow", system-ui;
+        }
+        
+        .recent-burns {
+            grid-column: 1 / -1;
+            margin-top: 2rem;
+        }
+        
+        .recent-burns h3 {
+  font-family: "Rubik Doodle Shadow", system-ui;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            font-size: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(139, 0, 0, 0.3);
+        }
+        
+        .burn-feed {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+        
+        .burn-item {
+            background: rgba(10, 10, 10, 0.5);
+            padding: 1rem;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            border-left: 3px solid var(--accent);
+        }
+        
+        .burn-item p {
+            margin-bottom: 0.3rem;
+        }
+        
+        .burn-item .amount {
+            color: var(--accent);
+            font-weight: bold;
+        }
+        
+        .death-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        
+        .death-message {
+  font-family: "Rubik Doodle Shadow", system-ui;
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            color: var(--accent);
+            text-shadow: 0 0 15px var(--glow);
+        }
+        
+        .resurrection-info {
+  font-family: "Rubik Doodle Shadow", system-ui;
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            color: var(--text);
+        }
+        
+        .soul-animation {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+            border-radius: 50%;
+            opacity: 0;
+            animation: soulRise 3s ease-out forwards;
+        }
+        
+        @keyframes soulRise {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+                width: 100px;
+                height: 100px;
+            }
+            100% {
+                transform: translateY(-100vh);
+                opacity: 0;
+                width: 300px;
+                height: 300px;
+            }
+        }
+        
+        .resurrection-result {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 70vh;
+            text-align: center;
+        }
+        
+        .result-title {
+  font-family: "Rubik Doodle Shadow", system-ui;
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            color: var(--accent);
+        }
+        
+        .balance-display {
+  font-family: "Rubik Doodle Shadow", system-ui;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: var(--text);
+        }
+        
+        .reward-animation {
+            width: 200px;
+            height: 200px;
+            position: relative;
+            margin-bottom: 2rem;
+        }
+        
+        .coin {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: gold;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            box-shadow: 0 0 10px gold;
+            animation: coinFloat 3s ease-in-out infinite;
+        }
+        
+        .coin:nth-child(1) {
+            top: 20px;
+            left: 20px;
+            animation-delay: 0s;
+        }
+        
+        .coin:nth-child(2) {
+            top: 10px;
+            left: 80px;
+            animation-delay: 0.5s;
+        }
+        
+        .coin:nth-child(3) {
+            top: 70px;
+            left: 50px;
+            animation-delay: 1s;
+        }
+        
+        @keyframes coinFloat {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+        
+        .void-message {
+  font-family: "Rubik Doodle Shadow", system-ui;
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            color: var(--text-dim);
+        }
+        
+        .claim-button {
+            background: var(--accent);
+            color: var(--text);
+            border: none;
+            padding: 1rem 2rem;
+  font-family: "Rubik Doodle Shadow", system-ui;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+        
+        .claim-button:hover {
+            background: #6b0000;
+            box-shadow: 0 0 15px var(--glow);
+        }
+        
+        @media (max-width: 768px) {
+            .burn-interface {
+                grid-template-columns: 1fr;
+            }
+            
+            .title {
+                font-size: 3rem;
+            }
+            
+            .subtitle {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="wallet-connect" id="walletConnect">
+            <img src="phantom-app-icon-drkprpl.png" alt="Phantom Wallet" width="32">
+            <div class="wallet-address" id="walletAddress">Not connected</div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <!-- Landing Screen -->
+        <div class="landing-screen" id="landingScreen">
+            <h1 class="title">DEATH IS ENTRY</h1>
+            <p class="subtitle">"To live again… first, you must die."</p>
+            <img src="Progetto senza titolo (1).png" alt="Reaper Character" class="character-image">
+            <button class="enter-button" id="enterButton">ENTER THE TOMB</button>
+        </div>
+        
+        <!-- Burn Interface -->
+        <div class="burn-interface" id="burnInterface">
+            <div class="burn-card">
+                <h2>BURN PORTAL</h2>
+                <div class="wallet-info">
+                    <p>Wallet: <span id="walletDisplay">Not connected</span></p>
+                    <p>$DIE Balance: <span id="dieBalance">0.00</span></p>
+                </div>
+                <div class="input-group">
+                    <label for="burnAmount">Amount to Burn</label>
+                    <input type="number" id="burnAmount" placeholder="0.00" min="0" step="0.01">
+                </div>
+                <button class="die-button" id="dieButton">DIE NOW</button>
+                <p class="tooltip">"This action is irreversible."</p>
+            </div>
+            
+            <div class="airdrop-info">
+                <h3>AIRDROP RESURRECTION TIMER</h3>
+                <div class="countdown" id="countdown">00:59:43</div>
+                
+                <div class="top-burners">
+                    <h4>TOP REAPERS</h4>
+                    <ul class="burner-list">
+                        <li><span>7x5F...3dQ1</span> <span>420.69 $DIE</span></li>
+                        <li><span>4h2G...9fR8</span> <span>350.25 $DIE</span></li>
+                        <li><span>1p9K...7mN4</span> <span>275.50 $DIE</span></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="recent-burns">
+                <h3>LAST TO DIE</h3>
+                <div class="burn-feed" id="burnFeed">
+                    <div class="burn-item">
+                        <p><span class="amount">150.00 $DIE</span> burned</p>
+                        <p>by 3j8D...2kL9</p>
+                        <p>2 minutes ago</p>
+                    </div>
+                    <div class="burn-item">
+                        <p><span class="amount">89.50 $DIE</span> burned</p>
+                        <p>by 6mN4...1p9K</p>
+                        <p>5 minutes ago</p>
+                    </div>
+                    <div class="burn-item">
+                        <p><span class="amount">200.25 $DIE</span> burned</p>
+                        <p>by 9fR8...4h2G</p>
+                        <p>12 minutes ago</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Death Animation -->
+        <div class="death-animation" id="deathAnimation">
+            <div class="soul-animation"></div>
+            <h2 class="death-message">YOU HAVE DIED.</h2>
+            <p class="resurrection-info">Check back in 1 hour… if worthy.</p>
+        </div>
+        
+        <!-- Resurrection Result -->
+        <div class="resurrection-result" id="resurrectionResult">
+            <h2 class="result-title">YOUR AFTERLIFE BALANCE</h2>
+            
+            <div id="rewardDisplay">
+                <div class="reward-animation">
+                    <div class="coin">3x SOL</div>
+                    <div class="coin">$DIE</div>
+                    <div class="coin">3x SOL</div>
+                </div>
+                <p class="balance-display">+3.42 SOL + 420.69 $DIE</p>
+            </div>
+            
+            <div id="voidDisplay" style="display: none;">
+                <p class="void-message">"YOU REMAIN IN THE VOID."</p>
+                <p class="void-message">TRY AGAIN.</p>
+            </div>
+            
+            <button class="claim-button" id="claimButton">CLAIM RESURRECTION</button>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const enterButton = document.getElementById('enterButton');
+        const landingScreen = document.getElementById('landingScreen');
+        const burnInterface = document.getElementById('burnInterface');
+        const walletConnect = document.getElementById('walletConnect');
+        const walletAddress = document.getElementById('walletAddress');
+        const walletDisplay = document.getElementById('walletDisplay');
+        const dieBalance = document.getElementById('dieBalance');
+        const burnAmount = document.getElementById('burnAmount');
+        const dieButton = document.getElementById('dieButton');
+        const deathAnimation = document.getElementById('deathAnimation');
+        const resurrectionResult = document.getElementById('resurrectionResult');
+        const claimButton = document.getElementById('claimButton');
+        const rewardDisplay = document.getElementById('rewardDisplay');
+        const voidDisplay = document.getElementById('voidDisplay');
+        const countdown = document.getElementById('countdown');
+        const burnFeed = document.getElementById('burnFeed');
+        
+        // State
+        let walletConnected = false;
+        let walletPublicKey = '';
+        let lastDeathTime = 0;
+        let airdropTime = Date.now() + 60 * 60 * 1000; // 1 hour from now
+        
+        // Mock data
+        const mockBurnFeed = [
+            { amount: 150.00, wallet: '3j8D...2kL9', time: '2 minutes ago' },
+            { amount: 89.50, wallet: '6mN4...1p9K', time: '5 minutes ago' },
+            { amount: 200.25, wallet: '9fR8...4h2G', time: '12 minutes ago' },
+            { amount: 75.30, wallet: '2kL9...3j8D', time: '18 minutes ago' },
+            { amount: 300.00, wallet: '5F7x...3dQ1', time: '25 minutes ago' },
+            { amount: 125.75, wallet: '8G4h...9fR8', time: '32 minutes ago' }
+        ];
+        
+        // Initialize
+        function init() {
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+            renderBurnFeed();
+            
+            // Check session storage for previous state
+            if (sessionStorage.getItem('hasDied') === 'true') {
+                landingScreen.style.display = 'none';
+                burnInterface.style.display = 'none';
+                resurrectionResult.style.display = 'flex';
+                
+                // Random chance for reward (20% chance)
+                if (Math.random() < 0.2) {
+                    rewardDisplay.style.display = 'block';
+                    voidDisplay.style.display = 'none';
+                } else {
+                    rewardDisplay.style.display = 'none';
+                    voidDisplay.style.display = 'block';
+                }
+            }
+        }
+        
+        // Update countdown timer
+        function updateCountdown() {
+            const now = Date.now();
+            const diff = airdropTime - now;
+            
+            if (diff <= 0) {
+                countdown.textContent = 'RESURRECTION NOW';
+                airdropTime = now + 60 * 60 * 1000; // Reset to 1 hour from now
+            } else {
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                
+                countdown.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            }
+        }
+        
+        // Render burn feed
+        function renderBurnFeed() {
+            burnFeed.innerHTML = '';
+            
+            mockBurnFeed.forEach(burn => {
+                const burnItem = document.createElement('div');
+                burnItem.className = 'burn-item';
+                burnItem.innerHTML = `
+                    <p><span class="amount">${burn.amount.toFixed(2)} $DIE</span> burned</p>
+                    <p>by ${burn.wallet}</p>
+                    <p>${burn.time}</p>
+                `;
+                burnFeed.appendChild(burnItem);
+            });
+        }
+        
+        // Simulate wallet connection
+        walletConnect.addEventListener('click', async () => {
+            if (walletConnected) {
+                // Disconnect
+                walletConnected = false;
+                walletPublicKey = '';
+                walletAddress.textContent = 'Not connected';
+                walletDisplay.textContent = 'Not connected';
+                dieBalance.textContent = '0.00';
+                return;
+            }
+            
+            // Simulate Phantom wallet connection
+            try {
+                const { solana } = window;
+                
+                if (solana && solana.isPhantom) {
+                    // In a real app, you would use solana.connect()
+                    // For simulation, we'll generate a mock public key
+                    walletConnected = true;
+                    walletPublicKey = '7x5F...3dQ1'; // Mock truncated public key
+                    
+                    walletAddress.textContent = walletPublicKey;
+                    walletDisplay.textContent = walletPublicKey;
+                    dieBalance.textContent = '420.69'; // Mock balance
+                    
+                    // Add subtle glow effect
+                    walletConnect.style.filter = 'drop-shadow(0 0 8px rgba(139, 0, 0, 0.7))';
+                    
+                    // In a real app, you would get the actual balance here
+                } else {
+                    alert('Phantom wallet not detected. Please install Phantom wallet to proceed.');
+                }
+            } catch (error) {
+                console.error('Wallet connection error:', error);
+                alert('Failed to connect wallet.');
+            }
+        });
+        
+        // Enter the tomb
+        enterButton.addEventListener('click', () => {
+            landingScreen.style.display = 'none';
+            burnInterface.style.display = 'grid';
+        });
+        
+        // Die now button
+        dieButton.addEventListener('click', () => {
+            const amount = parseFloat(burnAmount.value);
+            
+            if (!walletConnected) {
+                alert('Connect your wallet first.');
+                return;
+            }
+            
+            if (isNaN(amount) || amount <= 0) {
+                alert('Enter a valid amount to burn.');
+                return;
+            }
+            
+            // Show death animation
+            burnInterface.style.display = 'none';
+            deathAnimation.style.display = 'flex';
+            
+            // Create multiple soul animations
+            for (let i = 0; i < 5; i++) {
+                const soul = document.createElement('div');
+                soul.className = 'soul-animation';
+                soul.style.left = `${Math.random() * 80 + 10}%`;
+                soul.style.animationDelay = `${i * 0.3}s`;
+                deathAnimation.appendChild(soul);
+            }
+            
+            // Play faint scream sound (muted by default)
+            const scream = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-creature-scream-289.mp3');
+            scream.volume = 0.3; // Muted by default
+            scream.play().catch(e => console.log('Audio play failed:', e));
+            
+            // After animation, show resurrection result
+            setTimeout(() => {
+                deathAnimation.style.display = 'none';
+                resurrectionResult.style.display = 'flex';
+                
+                // Random chance for reward (20% chance)
+                if (Math.random() < 0.2) {
+                    rewardDisplay.style.display = 'block';
+                    voidDisplay.style.display = 'none';
+                } else {
+                    rewardDisplay.style.display = 'none';
+                    voidDisplay.style.display = 'block';
+                }
+                
+                // Store in session that user has died
+                sessionStorage.setItem('hasDied', 'true');
+                
+                // Add to burn feed
+                mockBurnFeed.unshift({
+                    amount: amount,
+                    wallet: walletPublicKey,
+                    time: 'just now'
+                });
+                
+                // Keep feed at 6 items max
+                if (mockBurnFeed.length > 6) {
+                    mockBurnFeed.pop();
+                }
+                
+                renderBurnFeed();
+            }, 3000);
+        });
+        
+        // Claim resurrection
+        claimButton.addEventListener('click', () => {
+            // In a real app, this would trigger the actual claim
+            alert('Resurrection claimed. Check your wallet.');
+            
+            // Reset the experience
+            sessionStorage.removeItem('hasDied');
+            resurrectionResult.style.display = 'none';
+            burnInterface.style.display = 'grid';
+            
+            // Update balance (mock)
+            if (rewardDisplay.style.display === 'block') {
+                dieBalance.textContent = (parseFloat(dieBalance.textContent) + 420.69).toFixed(2);
+            }
+        });
+        
+        // Initialize the app
+        init();
+    </script>
+</body>
+</html>
